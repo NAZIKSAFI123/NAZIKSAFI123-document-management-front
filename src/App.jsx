@@ -1,9 +1,14 @@
+
+import Header from "./components/Header"
+import DetailsFile from "./pages/DetailsFile"
+
 function App() {
   return (
     <>
-      <div>
-        <h1>Tailwind header</h1>
-      </div>
+
+  <Header/>
+  <DetailsFile/>
+
     </>
   );
 }
