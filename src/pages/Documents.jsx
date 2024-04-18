@@ -7,7 +7,7 @@ import Pagination from "../components/Pagination";
 
 const Documents = () => {
   const [page, setPage] = useState(1);
-  const [size, setSize] = useState(3);
+  const [size, setSize] = useState(4);
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("name");
 
@@ -36,10 +36,7 @@ const Documents = () => {
 
   return (
     <div className="max-w-screen-lg mx-auto">
-      <DocumentHeader
-        onSearch={handleSearch}
-        onAddDocument={handleAddDocument}
-      />
+      <DocumentHeader onSearch={handleSearch} />
 
       <DocumentList
         data={data}
