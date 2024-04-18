@@ -1,15 +1,15 @@
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Header from "./components/Header";
-import DetailsFile from "./pages/DetailsFile";
+import DocumentDetails from "./pages/DocumentDetails";
 import Documents from "./pages/Documents";
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 function App() {
   return (
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<Documents />}/>
-        <Route path="/document/:id" element={<DetailsFile/>} />
+        <Route path="/" element={<Documents />} />
+        <Route path="/document/:id" element={<DocumentDetails />} />
       </Routes>
     </Router>
   );
