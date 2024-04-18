@@ -6,6 +6,7 @@ import video from "../assets/types/video.png";
 import xls from "../assets/types/xls.png";
 import csv from "../assets/types/csv.png";
 import unknown from "../assets/types/unknown.png";
+import Jpeg from "../assets/types/jpeg.png";
 
 const getFileTypeIcon = (fileType) => {
     switch (fileType) {
@@ -23,6 +24,8 @@ const getFileTypeIcon = (fileType) => {
             return xls;
         case "text/csv":
             return csv;
+            case "image/jpeg":
+                return Jpeg;
         default:
             return unknown;
     }

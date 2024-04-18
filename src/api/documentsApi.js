@@ -19,6 +19,14 @@ export const getDocumentById = async (id) => {
     const response = await axios.get(`${BASE_URL}/api/documents/${id}`);
     return response.data;
 };
+export const deleteDocument = async (id) => {
+    try {
+        const response = await axios.delete(`${BASE_URL}/api/documents/${id}`);
+        return response.data;
+    } catch (error) {
+        console.error("Error deleting document:", error);
+        throw error; }
+};
 
 
 export const searchDocuments = async (keyword, date = null, page = 1, size = 5) => {
