@@ -25,7 +25,7 @@ export default function Header() {
 
   return (
     <div>
-      <nav className={`bg-white ${isMobile ? 'h-fit' : 'h-16'} overflow-hidden shadow-lg`}>
+      <nav className={`bg-white mb-4 ${isMobile ? 'h-fit ' : 'h-16'} overflow-hidden shadow-md`}>
         <div className={`${isMobile ? 'py-4' : 'lg:px-8 px-4 max-w-[1280px] h-full m-auto'} flex items-center justify-between`}>
           <div className="flex items-center">
             <img src={docImage} alt="Document Image" className="w-12 h-12 mr-2" />
