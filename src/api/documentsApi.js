@@ -35,3 +35,22 @@ export const searchDocuments = async (keyword, date = null, page = 1, size = 5) 
     });
     return response.data;
 };
+
+
+export const addDocument = async ({ newDocument, file }) => {
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("name", newDocument.name);
+    formData.append("type", newDocument.type);
+    formData.append("description", newDocument.description);
+
+    const config = {
+        headers: {
+            "content-type": "multipart/form-data",
+        },
+    };
+
+    const response = await axios.post(`${BASE_URL}/api/documents`, formData, config);
+    return response.data;
+};

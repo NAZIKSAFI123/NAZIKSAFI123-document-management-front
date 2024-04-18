@@ -24,17 +24,17 @@ function Pagination({
   const endElement = Math.min((page + 1) * size, totalElements);
 
   return (
-    <div className="flex justify-between items-center">
-      <div>
+    <div className="flex justify-between items-center border-t-2 py-2">
+      <span className="font-semibold">
         Showing {startElement}-{endElement} of {totalElements} results
-      </div>
+      </span>
       <div className="flex items-center gap-2">
         <select
           value={size}
           onChange={handlePageSizeChange}
-          className="px-2 py-1 border rounded-md"
+          className="px-3 py-2 border  rounded-md"
         >
-          <option value={3}>3 per Page</option>
+          <option value={4}>4 per Page</option>
           <option value={10}>10 per Page</option>
           <option value={20}>20 per Page</option>
           <option value={50}>50 per Page</option>

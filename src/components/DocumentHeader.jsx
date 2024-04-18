@@ -5,18 +5,27 @@ import {
   RiSearch2Line,
   RiUploadCloud2Line,
 } from "react-icons/ri";
+import DocumentUploadModal from "./DocumentUploadModal";
 
-function DocumentHeader({ onSearch, onUpload }) {
+function DocumentHeader({ onSearch }) {
   const [keyword, setKeyword] = useState("");
   const [selectedDate, setSelectedDate] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false); // State to manage modal visibility
 
   const handleSearch = () => {
-    console.log("this is test ", keyword);
     onSearch(keyword, selectedDate || null);
   };
 
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
+  };
+
+  const handleUpload = () => {
+    setIsModalOpen(true); // Open the modal when upload button is clicked
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false); // Close the modal
   };
 
   return (
@@ -29,7 +38,6 @@ function DocumentHeader({ onSearch, onUpload }) {
             className="self-center flex"
             color="#999"
           />
-
           <input
             type="text"
             className="w-full  flex bg-transparent pl-2  outline-0"
@@ -64,12 +72,15 @@ function DocumentHeader({ onSearch, onUpload }) {
       <div className="w-full md:w-fit">
         <button
           className="px-10 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-md flex items-center w-full gap-3"
-          onClick={onUpload}
+          onClick={handleUpload}
         >
           <RiUploadCloud2Line size={20} />
           <span>Upload</span>
         </button>
       </div>
+
+      {/* Document Upload Modal */}
+      <DocumentUploadModal isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 }
