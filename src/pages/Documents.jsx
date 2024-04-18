@@ -11,6 +11,11 @@ const Documents = () => {
   const [size, setSize] = useState(3);
   const [sortDirection, setSortDirection] = useState("asc");
   const [sortBy, setSortBy] = useState("name");
+  const [selectedDocumentId, setSelectedDocumentId] = useState(null);
+
+  const handleDocumentClick = (documentId) => {
+    setSelectedDocumentId(documentId); // Sets the selected document ID
+  };
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [searchDate, setSearchDate] = useState(null);
