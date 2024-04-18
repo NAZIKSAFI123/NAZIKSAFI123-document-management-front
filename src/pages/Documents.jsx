@@ -37,7 +37,6 @@ const Documents = () => {
     setSearchKeyword(keyword);
     setSearchDate(date);
   };
-  const handleAddDocument = () => {};
 
   return (
     <div className="max-w-screen-lg mx-auto">

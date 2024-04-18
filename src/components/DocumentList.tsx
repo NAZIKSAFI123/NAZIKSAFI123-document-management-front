@@ -1,9 +1,10 @@
 import React from "react";
 import { alertError } from "../libs/notification";
 import DocumentCard from "./DocumentCard";
+import Spinner from "./Spinner";
 
 const DocumentList = ({ data, isError, isLoading, error }) => {
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) return <Spinner />;
   if (isError) {
     if (error.response && error.response.status === 404) {
       return <div className="text-center mt-4">No documents found</div>;
