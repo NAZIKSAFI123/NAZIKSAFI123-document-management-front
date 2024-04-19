@@ -1,21 +1,25 @@
 import { useEffect, useState } from "react";
 import { BsFiletypeDocx, BsFillPersonVcardFill } from "react-icons/bs";
+import { FaEdit } from "react-icons/fa";
 import { IoLinkOutline } from "react-icons/io5";
 import { MdDateRange } from "react-icons/md";
 import { SiZaim } from "react-icons/si";
-import { deleteDocument, getDocumentById, getAllUsers } from "../api/documentsApi";
+import { useNavigate } from "react-router-dom";
+import { deleteDocument, getDocumentById } from "../api/documentsApi";
+import { getAllUsers } from "../api/usersApi";
 import getFileTypeIcon from "../libs/fileUtils";
 import {
   alertError,
   alertSuccess,
   deleteConfirmation,
 } from "../libs/notification";
-import { FaEdit } from "react-icons/fa";
 
 export default function DocumentDetails() {
+  const navigate = useNavigate();
+
   const [documentData, setDocumentData] = useState({});
-  const [selectedUser, setSelectedUser] = useState('');
-  const [selectedPermission, setSelectedPermission] = useState('read');
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedPermission, setSelectedPermission] = useState("read");
   const [showDropdown, setShowDropdown] = useState(false);
   const [users, setUsers] = useState([]);
   const handleUserChange = (e) => {
@@ -31,7 +35,7 @@ export default function DocumentDetails() {
         const usersData = await getAllUsers();
         setUsers(usersData);
       } catch (error) {
-        console.error('Erreur lors de la récupération des utilisateurs:', error);
+        alertError(`Error while fetching users  : ${error}`);
       }
     };
 
@@ -39,9 +43,14 @@ export default function DocumentDetails() {
   }, []);
 
   const handleShare = () => {
-    console.log('Document partagé avec l\'utilisateur :', selectedUser, ' et la permission :', selectedPermission);
-    setSelectedUser('');
-    setSelectedPermission('read');
+    console.log(
+      "Document partagé avec l'utilisateur :",
+      selectedUser,
+      " et la permission :",
+      selectedPermission
+    );
+    setSelectedUser("");
+    setSelectedPermission("read");
     setShowDropdown(false);
   };
   useEffect(() => {
@@ -66,7 +75,7 @@ export default function DocumentDetails() {
       if (isConfirmed) {
         await deleteDocument(documentId);
         await alertSuccess("Document deleted successfully!");
-        window.location.href = "/";
+        navigate("/");
       }
     } catch (error) {
       console.error("Error deleting document:", error);
@@ -93,64 +102,74 @@ export default function DocumentDetails() {
   return (
     <div className="flex justify-center">
       <div className="flex flex-wrap w-full max-w-screen-lg">
-      <div className="w-full lg:w-4/6 p-4">
-      <div className="bg-white border rounded-lg flex flex-col lg:flex-row items-center justify-between p-8">
-        <div className="flex items-center mb-4 lg:mb-0">
-          <img
-            className="w-fit h-24 object-cover border p-1 rounded-md"
-            src={getFileTypeIcon(documentData.type)}
-            alt="Document Type"
-          />
-          <div className="ml-6">
-            <h2 className="text-xl font-bold">{documentData.name}</h2>
-            <p className="text-gray-500">{documentData.type}</p>
-          </div>
-        </div>
-        <div className="flex flex-col lg:flex-row items-center">
-          <button
-            className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-2 lg:mb-0 lg:mr-2"
-            onClick={handleDownload}
-          >
-            Download
-          </button>
-          <button
-            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-            onClick={handleDelete}
-          >
-            Delete
-          </button>
-          {/* Bouton Partager avec menu déroulant pour choisir l'utilisateur et la permission */}
-          <div className="relative ml-2">
-            <button
-              className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-              onClick={() => setShowDropdown(!showDropdown)}
-            >
-              Partager
-            </button>
-            {showDropdown && (
-              <div className="absolute mt-2 w-48 bg-white border rounded-md shadow-lg">
-                <select className="w-full p-2" onChange={handleUserChange} value={selectedUser}>
-                  <option value="">Sélectionner un utilisateur</option>
-                  {users.map(user => (
-                    <option key={user.id} value={user.id}>{user.name}</option>
-                  ))}
-                </select>
-                <select className="w-full p-2" onChange={handlePermissionChange} value={selectedPermission}>
-                  <option value="lecture">read</option>
-                  <option value="écriture">write</option>
-                </select>
+        <div className="w-full lg:w-4/6 p-4">
+          <div className="bg-white border rounded-lg flex flex-col lg:flex-row items-center justify-between p-8">
+            <div className="flex items-center mb-4 lg:mb-0">
+              <img
+                className="w-fit h-24 object-cover border p-1 rounded-md"
+                src={getFileTypeIcon(documentData.type)}
+                alt="Document Type"
+              />
+              <div className="ml-6">
+                <h2 className="text-xl font-bold">{documentData.name}</h2>
+                <p className="text-gray-500">{documentData.type}</p>
+              </div>
+            </div>
+            <div className="flex flex-col lg:flex-row items-center">
+              <button
+                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-2 lg:mb-0 lg:mr-2"
+                onClick={handleDownload}
+              >
+                Download
+              </button>
+              <button
+                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                onClick={handleDelete}
+              >
+                Delete
+              </button>
+              {/* Bouton Partager avec menu déroulant pour choisir l'utilisateur et la permission */}
+              <div className="relative ml-2">
                 <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-2"
-                  onClick={handleShare}
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => setShowDropdown(!showDropdown)}
                 >
                   Partager
                 </button>
+                {showDropdown && (
+                  <div className="absolute mt-2 w-48 bg-white border rounded-md shadow-lg">
+                    <select
+                      className="w-full p-2"
+                      onChange={handleUserChange}
+                      value={selectedUser}
+                    >
+                      <option value="">Sélectionner un utilisateur</option>
+                      {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="w-full p-2"
+                      onChange={handlePermissionChange}
+                      value={selectedPermission}
+                    >
+                      <option value="lecture">read</option>
+                      <option value="écriture">write</option>
+                    </select>
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-2"
+                      onClick={handleShare}
+                    >
+                      Partager
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
         </div>
-      </div>
-    </div>
         <div className="w-full lg:w-2/6  p-4">
           <div className="bg-white border  rounded-lg">
             <div className="p-4">
