@@ -49,7 +49,6 @@ export const searchDocuments = async (
   return response.data;
 };
 
-
 export const addDocument = async ({ newDocument, file }) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -67,7 +66,7 @@ export const addDocument = async ({ newDocument, file }) => {
   const config = {
     headers: {
       "content-type": "multipart/form-data",
-      ...authHeader()
+      ...authHeader(),
     },
   };
 
@@ -78,7 +77,6 @@ export const addDocument = async ({ newDocument, file }) => {
   );
   return response.data;
 };
-
 
 export const shareDocumentWithUser = async ({
   documentId,
@@ -109,5 +107,12 @@ export const getUserDocuments = async (userId, page = 1, size = 5) => {
     `${BASE_URL}/api/documents/user?page=${page}&size=${size}&userId=${userId}`,
     { headers: authHeader() }
   );
+  return response.data;
+};
+export const getUsersWithPermissions = async (documentId) => {
+  const response = await axios.get(`${BASE_URL}/api/sh/${documentId}`, {
+    headers: authHeader(),
+  });
+  console.log(response);
   return response.data;
 };
