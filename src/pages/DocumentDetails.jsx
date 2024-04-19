@@ -1,16 +1,18 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BsFiletypeDocx, BsFillPersonVcardFill } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
-import { IoLinkOutline } from "react-icons/io5";
-import { MdDateRange } from "react-icons/md";
-import { IoMdShare } from "react-icons/io";
-import { SiZaim } from "react-icons/si";
-import { MdDelete } from "react-icons/md";
 import { ImDownload3 } from "react-icons/im";
+import { IoMdShare } from "react-icons/io";
+import { IoLinkOutline } from "react-icons/io5";
+import { MdDateRange, MdDelete } from "react-icons/md";
+import { SiZaim } from "react-icons/si";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
+import { getUser } from "../api/authStorage";
 import { deleteDocument, getDocumentById } from "../api/documentsApi";
-import getFileTypeIcon from "../libs/fileUtils";
 import DocumentShareModal from "../components/DocumentShareModal";
+import Spinner from "../components/Spinner";
+import getFileTypeIcon from "../libs/fileUtils";
 import {
   alertError,
   alertSuccess,
@@ -20,9 +22,29 @@ import {
 export default function DocumentDetails() {
   const navigate = useNavigate();
   const documentId = window.location.pathname.split("/").pop();
-
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [documentData, setDocumentData] = useState({});
+
+  const {
+    data: documentData,
+    isLoading,
+    isError,
+    error,
+  } = useQuery(
+    ["document", documentId],
+    () => getDocumentById(documentId, getUser().id),
+    {
+      onError: (error) => {
+        if (error.response && error.response.status === 403) {
+          // Forbidden status code received, navigate to home page
+          //navigate("/");
+          alertError("You don't have permission to read the document.");
+        } else {
+          // Other errors
+          alertError("Error fetching document data:", error);
+        }
+      },
+    }
+  );
 
   const handleShare = () => {
     setIsModalOpen(true);
@@ -30,26 +52,12 @@ export default function DocumentDetails() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
-
-  useEffect(() => {
-    const fetchDocumentData = async () => {
-      try {
-        const data = await getDocumentById(documentId);
-        console.log(data);
-        setDocumentData(data);
-      } catch (error) {
-        console.error("Error fetching document data:", error);
-      }
-    };
-    fetchDocumentData();
-  }, []);
-
   const handleDelete = async () => {
     try {
       const { isConfirmed } = await deleteConfirmation();
 
       if (isConfirmed) {
-        await deleteDocument(documentId);
+        await deleteDocument(documentId, getUser().id);
         await alertSuccess("Document deleted successfully!");
         navigate("/");
       }
@@ -58,7 +66,6 @@ export default function DocumentDetails() {
       await alertError("Failed to delete document!");
     }
   };
-
   const handleDownload = async () => {
     try {
       const response = await fetch(`${documentData.storageLocation}`);
@@ -74,6 +81,9 @@ export default function DocumentDetails() {
       console.error("Error downloading document:", error);
     }
   };
+
+  if (isLoading) return <Spinner />;
+  if (isError) return <div>Error: {error.message}</div>;
 
   return (
     <div className="flex justify-center">
