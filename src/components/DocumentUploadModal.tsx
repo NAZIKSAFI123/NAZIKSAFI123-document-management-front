@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useMutation } from "react-query";
+import { useMutation, useQueryClient } from "react-query";
 import { addDocument } from "../api/documentsApi";
 import { alertError, alertSuccess } from "../libs/notification";
 import FileUploader from "./FileUploader";
 import Modal from "./Modal";
 
 function DocumentUploadModal({ isOpen, onClose }) {
+  const queryClient = useQueryClient();
   const [file, setFile] = useState(null);
   const [newDocument, setNewDocument] = useState({
     name: "",
@@ -28,6 +29,7 @@ function DocumentUploadModal({ isOpen, onClose }) {
     onSuccess: () => {
       alertSuccess("Document uploaded successfully!");
       onClose();
+      queryClient.invalidateQueries("documents");
     },
     onError: () => {
       alertError("Failed to upload document. Please try again.");

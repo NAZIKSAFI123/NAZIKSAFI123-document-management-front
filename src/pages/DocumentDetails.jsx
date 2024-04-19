@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { BsFiletypeDocx, BsFillPersonVcardFill } from "react-icons/bs";
+import { FaEdit } from "react-icons/fa";
 import { IoLinkOutline } from "react-icons/io5";
 import { MdDateRange } from "react-icons/md";
 import { SiZaim } from "react-icons/si";
+import { useNavigate } from "react-router-dom";
 import { deleteDocument, getDocumentById } from "../api/documentsApi";
 import getFileTypeIcon from "../libs/fileUtils";
 import {
@@ -10,10 +12,17 @@ import {
   alertSuccess,
   deleteConfirmation,
 } from "../libs/notification";
-import { FaEdit } from "react-icons/fa";
 
 export default function DocumentDetails() {
-  const [documentData, setDocumentData] = useState({});
+  const [documentData, setDocumentData] = useState({
+    name: "",
+    metadata:  {},
+    creationDate: "",
+    storageLocation: "",
+    description: "",
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDocumentData = async () => {
@@ -37,7 +46,7 @@ export default function DocumentDetails() {
       if (isConfirmed) {
         await deleteDocument(documentId);
         await alertSuccess("Document deleted successfully!");
-        window.location.href = "/";
+        navigate("/");
       }
     } catch (error) {
       console.error("Error deleting document:", error);
