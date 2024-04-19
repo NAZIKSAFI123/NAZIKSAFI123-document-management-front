@@ -8,7 +8,12 @@ import { SiZaim } from "react-icons/si";
 import { MdDelete } from "react-icons/md";
 import { ImDownload3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
-import { deleteDocument, getDocumentById } from "../api/documentsApi";
+import TableUsersPemissions from "../components/TableUsersPemissions";
+import {
+  deleteDocument,
+  getDocumentById,
+  getUsersWithPermissions,
+} from "../api/documentsApi";
 import getFileTypeIcon from "../libs/fileUtils";
 import DocumentShareModal from "../components/DocumentShareModal";
 import {
@@ -32,16 +37,19 @@ export default function DocumentDetails() {
   };
 
   useEffect(() => {
-    const fetchDocumentData = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getDocumentById(documentId);
-        console.log(data);
-        setDocumentData(data);
+        const [documentData, usersPermissions] = await Promise.all([
+          getDocumentById(documentId),
+          getUsersWithPermissions(documentId),
+        ]);
+        setDocumentData(documentData);
+        setUsersWithPermissions(usersPermissions);
       } catch (error) {
         console.error("Error fetching document data:", error);
       }
     };
-    fetchDocumentData();
+    fetchData();
   }, []);
 
   const handleDelete = async () => {
@@ -286,6 +294,7 @@ export default function DocumentDetails() {
             </div>
           </div>
         </div>
+        <TableUsersPemissions documentId={documentId} />
       </div>
     </div>
   );
