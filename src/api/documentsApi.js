@@ -13,7 +13,10 @@ export const getAllDocuments = async (
     );
     return response.data;
 };
-
+export const getAllUsers = async () => {
+    const response = await axios.get(`${BASE_URL}/api/user`);
+    return response.data;
+};
 
 export const getDocumentById = async (id) => {
     const response = await axios.get(`${BASE_URL}/api/documents/${id}`);
