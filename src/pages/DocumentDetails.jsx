@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsFiletypeDocx, BsFillPersonVcardFill } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
 import { ImDownload3 } from "react-icons/im";
@@ -10,6 +10,7 @@ import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../api/authStorage";
 import { deleteDocument, getDocumentById } from "../api/documentsApi";
+import { getUserById } from "../api/usersApi";
 import DocumentShareModal from "../components/DocumentShareModal";
 import Spinner from "../components/Spinner";
 import TableUsersPemissions from "../components/TableUsersPemissions";
@@ -24,6 +25,7 @@ export default function DocumentDetails() {
   const navigate = useNavigate();
   const documentId = window.location.pathname.split("/").pop();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [owner, setOwner] = useState(null);
 
   const {
     data: documentData,
@@ -46,6 +48,25 @@ export default function DocumentDetails() {
       },
     }
   );
+
+  // Fetch the owner details when documentData is available
+  useEffect(() => {
+    const fetchOwnerDetails = async () => {
+      if (
+        documentData &&
+        documentData.metadata &&
+        documentData.metadata.owner
+      ) {
+        try {
+          const ownerData = await getUserById(documentData.metadata.owner);
+          setOwner(ownerData);
+        } catch (error) {
+          console.error("Error fetching owner details:", error);
+        }
+      }
+    };
+    fetchOwnerDetails();
+  }, [documentData]);
 
   const handleShare = () => {
     setIsModalOpen(true);
@@ -86,7 +107,7 @@ export default function DocumentDetails() {
 
   if (isLoading) return <Spinner />;
   if (isError) return <div>Error: {error.message}</div>;
-
+  console.log(JSON.stringify(documentData));
   return (
     <div className="flex justify-center">
       <div className="flex flex-wrap w-full max-w-screen-lg">
@@ -273,32 +294,37 @@ export default function DocumentDetails() {
                     <th scope="col" className="py-3 px-6">
                       Name
                     </th>
-                    <td className="py-4 px-6">Nazik</td>
+                    <td className="py-4 px-6">{owner ? owner.name : "-"}</td>
+                  </tr>
+
+                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <th scope="col" className="py-3 px-6">
+                      username
+                    </th>
+                    <td className="py-4 px-6">
+                      {owner ? owner.username : "-"}
+                    </td>
                   </tr>
                   <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <th scope="col" className="py-3 px-6">
                       Email
                     </th>
-                    <td className="py-4 px-6">nazik@gmail.com</td>
+                    <td className="py-4 px-6">{owner ? owner.email : "-"}</td>
                   </tr>
                   <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <th scope="col" className="py-3 px-6">
-                      Phone
+                      create Time
                     </th>
-                    <td className="py-4 px-6">0690817264</td>
-                  </tr>
-                  <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                    <th scope="col" className="py-3 px-6">
-                      Last Login
-                    </th>
-                    <td className="py-4 px-6">12/12/2001</td>
+                    <td className="py-4 px-6">
+                      {owner ? owner.createTime : "-"}
+                    </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+          <TableUsersPemissions documentId={documentId} />
         </div>
-        <TableUsersPemissions documentId={documentId} />
       </div>
     </div>
   );
