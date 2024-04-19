@@ -3,11 +3,14 @@ import { BsFiletypeDocx, BsFillPersonVcardFill } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
 import { IoLinkOutline } from "react-icons/io5";
 import { MdDateRange } from "react-icons/md";
+import { IoMdShare } from "react-icons/io";
 import { SiZaim } from "react-icons/si";
+import { MdDelete } from "react-icons/md";
+import { ImDownload3 } from "react-icons/im";
 import { useNavigate } from "react-router-dom";
 import { deleteDocument, getDocumentById } from "../api/documentsApi";
-import { getAllUsers } from "../api/usersApi";
 import getFileTypeIcon from "../libs/fileUtils";
+import DocumentShareModal from "../components/DocumentShareModal";
 import {
   alertError,
   alertSuccess,
@@ -16,47 +19,21 @@ import {
 
 export default function DocumentDetails() {
   const navigate = useNavigate();
+  const documentId = window.location.pathname.split("/").pop();
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [documentData, setDocumentData] = useState({});
-  const [selectedUser, setSelectedUser] = useState("");
-  const [selectedPermission, setSelectedPermission] = useState("read");
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [users, setUsers] = useState([]);
-  const handleUserChange = (e) => {
-    setSelectedUser(e.target.value);
-  };
-
-  const handlePermissionChange = (e) => {
-    setSelectedPermission(e.target.value);
-  };
-  useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const usersData = await getAllUsers();
-        setUsers(usersData);
-      } catch (error) {
-        alertError(`Error while fetching users  : ${error}`);
-      }
-    };
-
-    fetchUsers();
-  }, []);
 
   const handleShare = () => {
-    console.log(
-      "Document partagé avec l'utilisateur :",
-      selectedUser,
-      " et la permission :",
-      selectedPermission
-    );
-    setSelectedUser("");
-    setSelectedPermission("read");
-    setShowDropdown(false);
+    setIsModalOpen(true);
   };
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
   useEffect(() => {
     const fetchDocumentData = async () => {
       try {
-        const documentId = window.location.pathname.split("/").pop();
         const data = await getDocumentById(documentId);
         console.log(data);
         setDocumentData(data);
@@ -69,7 +46,6 @@ export default function DocumentDetails() {
 
   const handleDelete = async () => {
     try {
-      const documentId = window.location.pathname.split("/").pop();
       const { isConfirmed } = await deleteConfirmation();
 
       if (isConfirmed) {
@@ -116,56 +92,37 @@ export default function DocumentDetails() {
               </div>
             </div>
             <div className="flex flex-col lg:flex-row items-center">
-              <button
-                className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mb-2 lg:mb-0 lg:mr-2"
-                onClick={handleDownload}
-              >
-                Download
-              </button>
-              <button
-                className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-                onClick={handleDelete}
-              >
-                Delete
-              </button>
-              {/* Bouton Partager avec menu déroulant pour choisir l'utilisateur et la permission */}
-              <div className="relative ml-2">
+              <div className="relative ml-2 flex items-center">
                 <button
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
-                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded mb-2 lg:mb-0 lg:mr-2 flex items-center"
+                  onClick={handleDownload}
                 >
-                  Partager
+                  <ImDownload3 className="mr-1" />
+                  Download
                 </button>
-                {showDropdown && (
-                  <div className="absolute mt-2 w-48 bg-white border rounded-md shadow-lg">
-                    <select
-                      className="w-full p-2"
-                      onChange={handleUserChange}
-                      value={selectedUser}
-                    >
-                      <option value="">Sélectionner un utilisateur</option>
-                      {users.map((user) => (
-                        <option key={user.id} value={user.id}>
-                          {user.name}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      className="w-full p-2"
-                      onChange={handlePermissionChange}
-                      value={selectedPermission}
-                    >
-                      <option value="lecture">read</option>
-                      <option value="écriture">write</option>
-                    </select>
-                    <button
-                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-2"
-                      onClick={handleShare}
-                    >
-                      Partager
-                    </button>
-                  </div>
-                )}
+              </div>
+
+              <div className="relative ml-2 flex items-center">
+                <button
+                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4  rounded mb-2 lg:mb-0 lg:mr-2 flex items-center"
+                  onClick={handleDelete}
+                >
+                  <MdDelete className="mr-1" /> Delete
+                </button>
+              </div>
+
+              <div className="relative ml-2 flex items-center">
+                <button
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded flex items-center"
+                  onClick={handleShare}
+                >
+                  <IoMdShare className="mr-1" /> Partager
+                </button>
+                <DocumentShareModal
+                  isOpen={isModalOpen}
+                  onClose={handleCloseModal}
+                  documentId={documentId}
+                />
               </div>
             </div>
           </div>
@@ -176,9 +133,7 @@ export default function DocumentDetails() {
               <h3 className="text-lg font-semibold mb-2">Description</h3>
               <div className="border-b border-gray-400 opacity-50 mb-2"></div>
               <p className="text-sm text-gray-600">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce
-                vel vestibulum eros. Vestibulum nec mi non ligula lacinia
-                vestibulum.
+                {documentData.description}
               </p>
             </div>
           </div>
