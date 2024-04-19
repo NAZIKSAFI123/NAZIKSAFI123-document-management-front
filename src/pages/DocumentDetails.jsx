@@ -12,6 +12,7 @@ import { getUser } from "../api/authStorage";
 import { deleteDocument, getDocumentById } from "../api/documentsApi";
 import DocumentShareModal from "../components/DocumentShareModal";
 import Spinner from "../components/Spinner";
+import TableUsersPemissions from "../components/TableUsersPemissions";
 import getFileTypeIcon from "../libs/fileUtils";
 import {
   alertError,
@@ -52,6 +53,7 @@ export default function DocumentDetails() {
   const handleCloseModal = () => {
     setIsModalOpen(false);
   };
+
   const handleDelete = async () => {
     try {
       const { isConfirmed } = await deleteConfirmation();
@@ -296,6 +298,7 @@ export default function DocumentDetails() {
             </div>
           </div>
         </div>
+        <TableUsersPemissions documentId={documentId} />
       </div>
     </div>
   );
