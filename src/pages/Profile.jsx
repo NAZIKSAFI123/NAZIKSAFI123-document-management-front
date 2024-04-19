@@ -28,7 +28,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 m-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 m-4">
       {/* First part */}
       <div>
         {/* Card for user photo */}
@@ -138,7 +138,7 @@ const Profile = () => {
       </div>
 
       {/* Second part (empty card) */}
-      <div className="bg-white border shadow-md rounded-lg overflow-y-scroll  w-full mx-auto p-4 ">
+      <div className="bg-white border shadow-md rounded-lg overflow-y-scroll w-full mx-auto p-4 ">
         <UserDocuments userId={user?.id} />
       </div>
     </div>

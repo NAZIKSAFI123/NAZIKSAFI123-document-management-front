@@ -1,5 +1,4 @@
 import React from "react";
-import { BsEyeFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import getFileTypeIcon from "../libs/fileUtils";
 
@@ -24,9 +23,13 @@ function DocumentCard({ document }) {
 
         {/* Second Part */}
         <div className="col-span-6 flex flex-col text-start ">
-          <div className="font-semibold text-lg mb-2">{document.name}</div>
-          <p className="text-gray-700 text-sm mb-2">Type: {document.type}</p>
-          <p className="text-gray-700 text-sm">
+          <div className="font-semibold text-lg mb-2 break-words">
+            {document.name}
+          </div>
+          <p className="text-gray-700 text-sm mb-2 break-words">
+            Type: {document.type}
+          </p>
+          <p className="text-gray-700 text-sm break-words">
             Creation Date : {document.creationDate}
           </p>
         </div>
