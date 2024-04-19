@@ -1,24 +1,9 @@
-// import axios from "axios";
+import axios from "axios";
+import { authHeader } from "./auth-header";
 
-// const BASE_URL = "http://localhost:8080";
+const BASE_URL = "http://localhost:8080";
 
-// // New functions for user endpoints
-// export const loginUser = async (user) => {
-//     try {
-//         const response = await axios.post(`${BASE_URL}/api/users/sign-in`, user);
-//         console.log(response.data);
-//         return response.data;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
-
-// export const registerUser = async (user) => {
-//     try {
-//         const response = await axios.post(`${BASE_URL}/api/users/sign-up`, user);
-//         console.log(response.data);
-//         return response.data;
-//     } catch (error) {
-//         throw error;
-//     }
-// };
+export const getAllUsers = async () => {
+    const response = await axios.get(`${BASE_URL}/api/users`, { headers: authHeader() });
+    return response.data;
+};

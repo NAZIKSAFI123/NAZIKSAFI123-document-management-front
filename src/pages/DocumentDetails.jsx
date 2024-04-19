@@ -6,6 +6,7 @@ import { MdDateRange } from "react-icons/md";
 import { SiZaim } from "react-icons/si";
 import { useNavigate } from "react-router-dom";
 import { deleteDocument, getDocumentById } from "../api/documentsApi";
+import { getAllUsers } from "../api/usersApi";
 import getFileTypeIcon from "../libs/fileUtils";
 import {
   alertError,
@@ -14,16 +15,44 @@ import {
 } from "../libs/notification";
 
 export default function DocumentDetails() {
-  const [documentData, setDocumentData] = useState({
-    name: "",
-    metadata:  {},
-    creationDate: "",
-    storageLocation: "",
-    description: "",
-  });
-
   const navigate = useNavigate();
 
+  const [documentData, setDocumentData] = useState({});
+  const [selectedUser, setSelectedUser] = useState("");
+  const [selectedPermission, setSelectedPermission] = useState("read");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [users, setUsers] = useState([]);
+  const handleUserChange = (e) => {
+    setSelectedUser(e.target.value);
+  };
+
+  const handlePermissionChange = (e) => {
+    setSelectedPermission(e.target.value);
+  };
+  useEffect(() => {
+    const fetchUsers = async () => {
+      try {
+        const usersData = await getAllUsers();
+        setUsers(usersData);
+      } catch (error) {
+        alertError(`Error while fetching users  : ${error}`);
+      }
+    };
+
+    fetchUsers();
+  }, []);
+
+  const handleShare = () => {
+    console.log(
+      "Document partagé avec l'utilisateur :",
+      selectedUser,
+      " et la permission :",
+      selectedPermission
+    );
+    setSelectedUser("");
+    setSelectedPermission("read");
+    setShowDropdown(false);
+  };
   useEffect(() => {
     const fetchDocumentData = async () => {
       try {
@@ -99,6 +128,45 @@ export default function DocumentDetails() {
               >
                 Delete
               </button>
+              {/* Bouton Partager avec menu déroulant pour choisir l'utilisateur et la permission */}
+              <div className="relative ml-2">
+                <button
+                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
+                  onClick={() => setShowDropdown(!showDropdown)}
+                >
+                  Partager
+                </button>
+                {showDropdown && (
+                  <div className="absolute mt-2 w-48 bg-white border rounded-md shadow-lg">
+                    <select
+                      className="w-full p-2"
+                      onChange={handleUserChange}
+                      value={selectedUser}
+                    >
+                      <option value="">Sélectionner un utilisateur</option>
+                      {users.map((user) => (
+                        <option key={user.id} value={user.id}>
+                          {user.name}
+                        </option>
+                      ))}
+                    </select>
+                    <select
+                      className="w-full p-2"
+                      onChange={handlePermissionChange}
+                      value={selectedPermission}
+                    >
+                      <option value="lecture">read</option>
+                      <option value="écriture">write</option>
+                    </select>
+                    <button
+                      className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded mt-2"
+                      onClick={handleShare}
+                    >
+                      Partager
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
