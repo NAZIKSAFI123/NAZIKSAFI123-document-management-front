@@ -9,11 +9,15 @@ import { SiZaim } from "react-icons/si";
 import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { getUser } from "../api/authStorage";
-import { deleteDocument, getDocumentById } from "../api/documentsApi";
+import {
+  deleteDocument,
+  downloadFile,
+  getDocumentById,
+} from "../api/documentsApi";
 import { getUserById } from "../api/usersApi";
 import DocumentShareModal from "../components/DocumentShareModal";
 import Spinner from "../components/Spinner";
-import TableUsersPemissions from "../components/TableUsersPemissions";
+import TableUsersPemissions from "../components/TableUsersPermissions";
 import getFileTypeIcon from "../libs/fileUtils";
 import {
   alertError,
@@ -38,18 +42,15 @@ export default function DocumentDetails() {
     {
       onError: (error) => {
         if (error.response && error.response.status === 403) {
-          // Forbidden status code received, navigate to home page
-          //navigate("/");
+          navigate("/");
           alertError("You don't have permission to read the document.");
         } else {
-          // Other errors
           alertError("Error fetching document data:", error);
         }
       },
     }
   );
 
-  // Fetch the owner details when documentData is available
   useEffect(() => {
     const fetchOwnerDetails = async () => {
       if (
@@ -90,67 +91,58 @@ export default function DocumentDetails() {
     }
   };
   const handleDownload = async () => {
-    try {
-      const response = await fetch(`${documentData.storageLocation}`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", documentData.name);
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      console.error("Error downloading document:", error);
-    }
+    await downloadFile(documentData, documentId, getUser().id);
   };
 
   if (isLoading) return <Spinner />;
   if (isError) return <div>Error: {error.message}</div>;
-  console.log(JSON.stringify(documentData));
+
   return (
     <div className="flex justify-center">
       <div className="flex flex-wrap w-full max-w-screen-lg">
         <div className="w-full lg:w-4/6 p-4">
-          <div className="bg-white border rounded-lg flex flex-col lg:flex-row items-center justify-between p-8">
-            <div className="flex items-center mb-4 lg:mb-0">
+          {/* start */}
+          <div className="bg-white border rounded-lg p-4 flex flex-col lg:flex-row justify-between items-center">
+            {/* Image Section */}
+            <div className="flex-shrink-0 mb-4 lg:mb-0 lg:mr-4">
               <img
-                className="w-fit h-24 object-cover border p-1 rounded-md"
+                className="w-16 h-16 lg:w-24 lg:h-24 object-cover border p-1 rounded-md"
                 src={getFileTypeIcon(documentData.type)}
                 alt="Document Type"
               />
-              <div className="ml-6">
-                <h2 className="text-xl font-bold">{documentData.name}</h2>
-                <p className="text-gray-500">{documentData.type}</p>
-              </div>
             </div>
-            <div className="flex flex-col lg:flex-row items-center">
-              <div className="relative ml-2 flex items-center">
+
+            <div className="flex flex-col gap-4 w-full">
+              <div className="flex flex-col">
+                <h2 className="text-lg lg:text-xl font-bold break-words ">
+                  {documentData.name}
+                </h2>
+                <p className="text-gray-500 text-sm break-words">
+                  {documentData.type}
+                </p>
+              </div>
+
+              <div className="flex flex-col sm:flex-row justify-end gap-1">
                 <button
-                  className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded mb-2 lg:mb-0 lg:mr-2 flex items-center"
+                  className="border border-blue-300 text-blue-500 hover:text-white hover:bg-blue-300 font-bold py-1 px-3 rounded flex gap-2 items-center"
                   onClick={handleDownload}
                 >
-                  <ImDownload3 className="mr-1" />
+                  <ImDownload3 />
                   Download
                 </button>
-              </div>
-
-              <div className="relative ml-2 flex items-center">
                 <button
-                  className="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4  rounded mb-2 lg:mb-0 lg:mr-2 flex items-center"
+                  className="border border-red-300 text-red-500 hover:text-white hover:bg-red-300 font-bold py-1 px-3 rounded flex gap-2 items-center"
                   onClick={handleDelete}
                 >
-                  <MdDelete className="mr-1" /> Delete
+                  <MdDelete /> Delete
                 </button>
-              </div>
-
-              <div className="relative ml-2 flex items-center">
                 <button
-                  className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-3 rounded flex items-center"
+                  className="border border-green-300 text-green-500 hover:text-white hover:bg-green-300 font-bold py-1 px-3 rounded flex gap-2 items-center"
                   onClick={handleShare}
                 >
-                  <IoMdShare className="mr-1" /> Partager
+                  <IoMdShare /> Share
                 </button>
+
                 <DocumentShareModal
                   isOpen={isModalOpen}
                   onClose={handleCloseModal}
@@ -159,6 +151,7 @@ export default function DocumentDetails() {
               </div>
             </div>
           </div>
+          {/* end */}
         </div>
         <div className="w-full lg:w-2/6  p-4">
           <div className="bg-white border  rounded-lg">
@@ -266,7 +259,7 @@ export default function DocumentDetails() {
                 <div className="mb-4">
                   <textarea
                     type="text"
-                    value={documentData.description}
+                    value={documentData?.description}
                     placeholder="Description"
                     className="border p-2 rounded w-full"
                   />

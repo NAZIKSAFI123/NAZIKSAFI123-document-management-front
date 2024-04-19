@@ -1,4 +1,5 @@
 import axios from "axios";
+import { alertError } from "../libs/notification";
 import { authHeader } from "./auth-header";
 import { getUser } from "./authStorage";
 
@@ -86,11 +87,6 @@ export const shareDocumentWithUser = async ({
   permission,
 }) => {
   try {
-    console.log("Document share method parameters:", {
-      documentId,
-      userId,
-      permission,
-    });
 
     const formData = new FormData();
     formData.append("documentId", documentId);
@@ -117,4 +113,31 @@ export const getUsersWithPermissions = async (documentId) => {
   });
   console.log(response);
   return response.data;
+};
+
+export const downloadFile = async (documentData, documentId, userId) => {
+  try {
+    console.log("Downloading file with params:", { documentId, userId });
+
+    const response = await fetch(`${documentData.storageLocation}?documentId=${documentId}&userId=${userId}`, {
+      headers: authHeader(),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", documentData.name);
+    document.body.appendChild(link);
+
+    link.click();
+    document.body.removeChild(link);
+  } catch (error) {
+    alertError("Error downloading document:", error);
+  }
 };
