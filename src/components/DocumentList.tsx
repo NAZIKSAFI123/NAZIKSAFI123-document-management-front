@@ -22,7 +22,7 @@ const DocumentList = ({ data, isError, isLoading, error }) => {
 
   return (
     <div className="space-y-4 py-1">
-      {data?.content.map((document) => (
+      {data?.content?.map((document) => (
         <DocumentCard key={document.id} document={document} />
       ))}
     </div>

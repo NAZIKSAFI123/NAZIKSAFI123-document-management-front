@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import DocumentDetails from "./pages/DocumentDetails";
 import Documents from "./pages/Documents";
 import Login from "./pages/Login";
+import Profile from "./pages/Profile";
 import Register from "./pages/Register";
 import PrivateRoute from "./routes/PrivateRoute";
 
@@ -14,7 +15,7 @@ function App() {
       <Routes>
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-
+        <Route path="/profile" element={<PrivateRoute Component={Profile} />} />
         <Route
           path="/document/:id"
           element={<PrivateRoute Component={DocumentDetails} />}

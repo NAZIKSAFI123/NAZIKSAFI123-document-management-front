@@ -1,5 +1,6 @@
 import axios from "axios";
 import { authHeader } from "./auth-header"; // Import the authHeader function
+import { getUser } from "./authStorage";
 
 const BASE_URL = "http://localhost:8080";
 
@@ -39,12 +40,20 @@ export const searchDocuments = async (keyword, date = null, page = 1, size = 5) 
     return response.data;
 };
 
+
 export const addDocument = async ({ newDocument, file }) => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("name", newDocument.name);
     formData.append("type", newDocument.type);
     formData.append("description", newDocument.description);
+
+    // Get the user id from the authentication storage
+    const user = getUser();    
+    const userId = user.id;
+
+    // Append the user id to the form data
+    formData.append("userId", userId);
 
     const config = {
         headers: {
@@ -54,5 +63,13 @@ export const addDocument = async ({ newDocument, file }) => {
     };
 
     const response = await axios.post(`${BASE_URL}/api/documents`, formData, config);
+    return response.data;
+};
+
+export const getUserDocuments = async (userId, page = 1, size = 5) => {
+    const response = await axios.get(
+        `${BASE_URL}/api/documents/user?page=${page}&size=${size}&userId=${userId}`,
+        { headers: authHeader() }
+    );
     return response.data;
 };
