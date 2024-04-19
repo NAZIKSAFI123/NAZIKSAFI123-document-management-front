@@ -1,5 +1,6 @@
 import axios from "axios";
 import { authHeader } from "./auth-header";
+import { getUser } from "./authStorage";
 
 const BASE_URL = "http://localhost:8080";
 
@@ -48,6 +49,7 @@ export const searchDocuments = async (
   return response.data;
 };
 
+
 export const addDocument = async ({ newDocument, file }) => {
   const formData = new FormData();
   formData.append("file", file);
@@ -55,10 +57,17 @@ export const addDocument = async ({ newDocument, file }) => {
   formData.append("type", newDocument.type);
   formData.append("description", newDocument.description);
 
+  // Get the user id from the authentication storage
+  const user = getUser();
+  const userId = user.id;
+
+  // Append the user id to the form data
+  formData.append("userId", userId);
+
   const config = {
     headers: {
       "content-type": "multipart/form-data",
-      ...authHeader(),
+      ...authHeader()
     },
   };
 
@@ -69,6 +78,8 @@ export const addDocument = async ({ newDocument, file }) => {
   );
   return response.data;
 };
+
+
 export const shareDocumentWithUser = async ({
   documentId,
   userId,
@@ -91,4 +102,12 @@ export const shareDocumentWithUser = async ({
     console.error("Error sharing document with user:", error);
     throw error;
   }
+};
+
+export const getUserDocuments = async (userId, page = 1, size = 5) => {
+  const response = await axios.get(
+    `${BASE_URL}/api/documents/user?page=${page}&size=${size}&userId=${userId}`,
+    { headers: authHeader() }
+  );
+  return response.data;
 };
