@@ -17,7 +17,7 @@ function TableUsersPermissions({ documentId }) {
   }, [documentId]);
 
   return (
-    <div className="w-full lg:w-2/6 p-4">
+    <div className="w-full my-2">
       <div className="bg-white border rounded-lg">
         <div className="p-4">
           <h3 className="text-lg font-semibold mb-2">Users permissions</h3>

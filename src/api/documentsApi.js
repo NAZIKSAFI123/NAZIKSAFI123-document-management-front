@@ -17,16 +17,17 @@ export const getAllDocuments = async (
   return response.data;
 };
 
-export const getDocumentById = async (id) => {
-  const response = await axios.get(`${BASE_URL}/api/documents/${id}`, {
+export const getDocumentById = async (documentId, userId) => {
+  const response = await axios.get(`${BASE_URL}/api/documents/${documentId}?userId=${userId}`, {
     headers: authHeader(),
   });
   return response.data;
 };
 
-export const deleteDocument = async (id) => {
+
+export const deleteDocument = async (documentId, userId) => {
   try {
-    const response = await axios.delete(`${BASE_URL}/api/documents/${id}`, {
+    const response = await axios.delete(`${BASE_URL}/api/documents/${documentId}?userId=${userId}`, {
       headers: authHeader(),
     });
     return response.data;
@@ -35,6 +36,7 @@ export const deleteDocument = async (id) => {
     throw error;
   }
 };
+
 
 export const searchDocuments = async (
   keyword,
